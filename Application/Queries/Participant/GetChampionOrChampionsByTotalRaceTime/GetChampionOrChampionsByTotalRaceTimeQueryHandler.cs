@@ -75,7 +75,7 @@ namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
             }
 
             var qualifiedParticipants = participants
-                .GroupBy(p => new { p.Id, p.Name})
+                .GroupBy(p => new { p.Id, p.Name })
                 .Where(g => g.Select(p => p.RaceType).Distinct().Count() == 3)
                 .Select(group => new
                 {
@@ -88,7 +88,7 @@ namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
                 .OrderBy(participants => participants.TotalRaceTime)
                 .ToList();
 
-            var fastestTotalRaceTime = fastestParticipants.FirstOrDefault()?.TotalRaceTime; 
+            var fastestTotalRaceTime = fastestParticipants.FirstOrDefault()?.TotalRaceTime;
 
             var champions = fastestParticipants
                 .Where(p => p.TotalRaceTime == fastestTotalRaceTime)
@@ -98,7 +98,7 @@ namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
                     Name = p.Name,
                     TotalRaceTime = p.TotalRaceTime,
                 }).ToList();
-            return champions; 
+            return champions;
         }
     }
 }
