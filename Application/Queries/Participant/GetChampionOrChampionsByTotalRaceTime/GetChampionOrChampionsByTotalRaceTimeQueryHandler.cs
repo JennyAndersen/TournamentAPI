@@ -1,91 +1,32 @@
 ﻿using Application.Dtos;
-using Infrastructure.FilePath;
+using Application.Services;
 using MediatR;
 
 namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
 {
     public class GetChampionOrChampionsByTotalRaceTimeQueryHandler : IRequestHandler<GetChampionOrChampionsByTotalRaceTimeQuery, IEnumerable<ParticipantDto>>
     {
-        private readonly IFilePathProvider _filePathProvider;
-        public GetChampionOrChampionsByTotalRaceTimeQueryHandler(IFilePathProvider filePathProvider)
+        private readonly IFileParsingService _fileParsingService;
+        public GetChampionOrChampionsByTotalRaceTimeQueryHandler(IFileParsingService fileParsingService)
         {
-            _filePathProvider = filePathProvider;
+            _fileParsingService = fileParsingService;
         }
         public async Task<IEnumerable<ParticipantDto>> Handle(GetChampionOrChampionsByTotalRaceTimeQuery request, CancellationToken cancellationToken)
         {
-            string filePath = _filePathProvider.GetFilePath();
-
-            List<Domain.Models.Participant> participants = [];
-
-            try
-            {
-                using (StreamReader sr = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = await sr.ReadLineAsync())
-                        != null)
-                    {
-                        string[] fields = line.Split(',');
-
-                        if (fields.Length != 5)
-                        {
-                            // TODO Logging
-                            continue;
-                        }
-
-                        string name = fields[0];
-                        int id;
-                        if (!int.TryParse(fields[1], out id))
-                        {
-                            // TODO Logging
-                            continue;
-                        }
-
-                        TimeSpan startTime;
-                        if (!TimeSpan.TryParse(fields[2], out startTime))
-                        {
-                            // TODO Logging
-                            continue;
-                        }
-
-                        TimeSpan endTime;
-                        if (!TimeSpan.TryParse(fields[3], out endTime))
-                        {
-                            // TODO Logging
-                            continue;
-                        }
-
-                        string raceType = fields[4];
-
-                        participants.Add(new Domain.Models.Participant
-                        {
-                            Name = name,
-                            Id = id,
-                            StartTime = startTime,
-                            EndTime = endTime,
-                            RaceType = raceType
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // TODO Logging
-                throw;
-            }
+            var participants = await _fileParsingService.ParseParticipantsFromFileAsync(request.File);
 
             var qualifiedParticipants = participants
                 .GroupBy(p => new { p.Id, p.Name })
                 .Where(g => g.Select(p => p.RaceType).Distinct().Count() == 3)
                 .Select(group => new
                 {
-                    Id = group.Key.Id,
-                    Name = group.Key.Name,
+                    group.Key.Id,
+                    group.Key.Name,
                     TotalRaceTime = TimeSpan.FromTicks(group.Sum(p => (p.EndTime - p.StartTime).Ticks))
                 });
 
             var fastestParticipants = qualifiedParticipants
-                .OrderBy(participants => participants.TotalRaceTime)
+                .OrderBy(p => p.TotalRaceTime)
                 .ToList();
 
             var fastestTotalRaceTime = fastestParticipants.FirstOrDefault()?.TotalRaceTime;
@@ -96,8 +37,9 @@ namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    TotalRaceTime = p.TotalRaceTime,
+                    AverageRaceTime = p.TotalRaceTime / 3,
                 }).ToList();
+
             return champions;
         }
     }

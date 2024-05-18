@@ -1,5 +1,4 @@
-﻿using Application.Queries.Participant.GetAllParticipants;
-using Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime;
+﻿using Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +9,38 @@ namespace API.Controllers
     public class ParticipantController : Controller
     {
         internal readonly IMediator _mediator;
+        private readonly ILogger<ParticipantController> _logger;
 
-        public ParticipantController(IMediator mediator)
+        public ParticipantController(IMediator mediator, ILogger<ParticipantController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
-        [HttpGet]
-        [Route("getAllParticipants")]
-        public async Task<IActionResult> GetAllParticipants()
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("File is empty");
+            }
+
             try
             {
-                var allParticipants = await _mediator.Send(new GetAllParticipantsQuery());
-                return allParticipants == null ? NotFound("No Participants found") : Ok(allParticipants);
+                var query = new GetChampionOrChampionsByTotalRaceTimeQuery { File = file };
+                var champions = await _mediator.Send(query);
+
+                if (champions == null || !champions.Any())
+                {
+                    return NotFound("No winner found or file is invalid");
+                }
+
+                return Ok(champions);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("getChampionOrChampionsByTotalRaceTime")]
-        public async Task<IActionResult> GetChampionOrChampionsByTotalRaceTime()
-        {
-            try
-            {
-                var champions = await _mediator.Send(new GetChampionOrChampionsByTotalRaceTimeQuery());
-                return champions == null ? NotFound("No champion or champions found") : Ok(champions);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex, "An error occurred while processing the file");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing the file");
             }
         }
     }
