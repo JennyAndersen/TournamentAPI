@@ -17,7 +17,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        [HttpPost("upload")]
+        [HttpPost("calculateChampionOrChampions")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -27,15 +27,8 @@ namespace API.Controllers
 
             try
             {
-                var query = new GetChampionOrChampionsByTotalRaceTimeQuery { File = file };
-                var champions = await _mediator.Send(query);
-
-                if (champions == null || !champions.Any())
-                {
-                    return NotFound("No winner found or file is invalid");
-                }
-
-                return Ok(champions);
+                var champions = await _mediator.Send(new CalculateChampionOrChampionsByTotalRaceTimeQuery { File = file });
+                return (champions == null || !champions.Any()) ? NotFound("No winner nor winners were found or file is invalid") : Ok(champions);
             }
             catch (Exception ex)
             {

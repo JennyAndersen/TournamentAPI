@@ -4,14 +4,14 @@ using MediatR;
 
 namespace Application.Queries.Participant.GetChampionOrChampionsByTotalRaceTime
 {
-    public class GetChampionOrChampionsByTotalRaceTimeQueryHandler : IRequestHandler<GetChampionOrChampionsByTotalRaceTimeQuery, IEnumerable<ParticipantDto>>
+    public class CalculateChampionOrChampionsByTotalRaceTimeQueryHandler : IRequestHandler<CalculateChampionOrChampionsByTotalRaceTimeQuery, IEnumerable<ParticipantDto>>
     {
         private readonly IFileParsingService _fileParsingService;
-        public GetChampionOrChampionsByTotalRaceTimeQueryHandler(IFileParsingService fileParsingService)
+        public CalculateChampionOrChampionsByTotalRaceTimeQueryHandler(IFileParsingService fileParsingService)
         {
             _fileParsingService = fileParsingService;
         }
-        public async Task<IEnumerable<ParticipantDto>> Handle(GetChampionOrChampionsByTotalRaceTimeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ParticipantDto>> Handle(CalculateChampionOrChampionsByTotalRaceTimeQuery request, CancellationToken cancellationToken)
         {
             var participants = await _fileParsingService.ParseParticipantsFromFileAsync(request.File);
 

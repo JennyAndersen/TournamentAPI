@@ -7,6 +7,7 @@ namespace Application.Services
     public class FileParsingService : IFileParsingService
     {
         private readonly ILogger<FileParsingService> _logger;
+        private static readonly string[] raceTypes = ["1000m", "eggRace", "sackRace"];
 
         public FileParsingService(ILogger<FileParsingService> logger)
         {
@@ -57,21 +58,21 @@ namespace Application.Services
                 return null;
             }
 
-            string name = fields[0].Trim();
+            var name = fields[0].Trim();
             if (!int.TryParse(fields[1], out int id))
             {
                 _logger.LogWarning($"Invalid ID format: {fields[1]} in line: {line}");
                 return null;
             }
 
-            string normalizedFullName = name.ToUpperInvariant();
+            var normalizedFullName = name.ToUpperInvariant();
             if (!idNameMapping.ContainsKey(id))
             {
                 idNameMapping[id] = normalizedFullName;
             }
             else
             {
-                string existingName = idNameMapping[id];
+                var existingName = idNameMapping[id];
                 if (existingName != normalizedFullName)
                 {
                     _logger.LogError($"ID conflict: ParticipantID {id} has different names: '{existingName}' and '{name}'");
@@ -97,9 +98,9 @@ namespace Application.Services
                 return null;
             }
 
-            string raceType = fields[4];
+            var raceType = fields[4];
 
-            if (!new[] { "1000m", "eggRace", "sackRace" }.Contains(raceType))
+            if (!raceTypes.Contains(raceType))
             {
                 _logger.LogWarning($"Invalid race type: {raceType} in line: {line}");
                 return null;
@@ -108,6 +109,7 @@ namespace Application.Services
             if (participants.Any(p => p.Id == id && p.RaceType == raceType))
             {
                 _logger.LogWarning($"Duplicate participation found for ID {id} in race type {raceType}");
+                throw new FormatException("Duplicate race entry for participant.");
             }
 
             return new Participant

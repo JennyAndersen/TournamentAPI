@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "TournamentAPI\API.csproj", "{92F2BFE1-D7AA-4F43-9C46-011A25E1C45A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "TournamentAPI\API.csproj", "{92F2BFE1-D7AA-4F43-9C46-011A25E1C45A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{1477D82A-F34D-4210-9FEF-659CB852AC25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{1477D82A-F34D-4210-9FEF-659CB852AC25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{F017DEDC-FCBA-4D56-A011-469A49404767}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{F017DEDC-FCBA-4D56-A011-469A49404767}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{3D9D145B-F061-4B9E-9492-72131E828555}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{3D9D145B-F061-4B9E-9492-72131E828555}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{4365FFC2-3A1B-4A43-932F-81F6F75FE374}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentAPI.Application.Tests", "Test\TournamentAPI.Application.Tests.csproj", "{4365FFC2-3A1B-4A43-932F-81F6F75FE374}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9B267219-C565-43B6-A23C-A938FDC6EEB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4365FFC2-3A1B-4A43-932F-81F6F75FE374} = {9B267219-C565-43B6-A23C-A938FDC6EEB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C15D7CAC-03A7-458C-AF54-B8BE001B1CED}
